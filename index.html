@@ -154,6 +154,25 @@
             visibility: visible;
         }
 
+        /* Forçar exibição da tela de ligação */
+        #call-screen:not(.hidden) {
+            display: flex !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            z-index: 1000 !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Debug: tela de ligação com fundo vermelho para teste */
+        #call-screen.debug {
+            background: red !important;
+            z-index: 9999 !important;
+        }
+
         #logo {
             width: 80%;
             max-width: 420px;
@@ -1730,8 +1749,40 @@
             const testCallButton = document.getElementById('test-call-button');
             if (testCallButton) {
                 testCallButton.addEventListener('click', () => {
-                    console.log('Botão de teste clicado - testando ligação');
-                    showDustinCall('walkie-talkie');
+                    console.log('🧪 Botão de teste clicado - testando ligação');
+                    
+                    // Teste direto sem usar variáveis globais
+                    const callScreenTest = document.getElementById('call-screen');
+                    const loadingScreenTest = document.getElementById('loading-screen');
+                    
+                    console.log('callScreenTest:', callScreenTest);
+                    console.log('loadingScreenTest:', loadingScreenTest);
+                    
+                    if (callScreenTest) {
+                        // Esconder loading screen
+                        if (loadingScreenTest) {
+                            loadingScreenTest.style.display = 'none';
+                        }
+                        
+                        // Mostrar call screen
+                        callScreenTest.classList.remove('hidden');
+                        callScreenTest.classList.add('debug');
+                        callScreenTest.style.display = 'flex';
+                        callScreenTest.style.opacity = '1';
+                        callScreenTest.style.visibility = 'visible';
+                        callScreenTest.style.zIndex = '9999';
+                        
+                        console.log('✅ Tela de ligação forçada a aparecer');
+                        console.log('Classes:', callScreenTest.className);
+                        console.log('Display:', callScreenTest.style.display);
+                    } else {
+                        console.error('❌ Call screen não encontrada no teste direto');
+                    }
+                    
+                    // Também chamar a função original
+                    if (typeof showDustinCall === 'function') {
+                        showDustinCall('walkie-talkie');
+                    }
                 });
             }
 
@@ -1739,23 +1790,53 @@
 
             function showDustinCall(missionKey = 'walkie-talkie') {
                 currentMissionAudio = missionKey;
-                console.log('Mostrando ligação do Dustin para missão:', missionKey);
+                console.log('=== INICIANDO LIGAÇÃO DO DUSTIN ===');
+                console.log('Missão:', missionKey);
                 console.log('callScreen element:', callScreen);
                 console.log('answerButton element:', answerButton);
                 console.log('declineButton element:', declineButton);
 
                 if (!callScreen) {
-                    console.error('callScreen element não encontrado!');
+                    console.error('❌ callScreen element não encontrado!');
                     return;
                 }
 
-                // Esconder a UI do jogo e mostrar a tela de ligação
-                document.getElementById('backpack-icon').style.display = 'none';
-                document.getElementById('distance-meter').classList.remove('show');
-                callScreen.classList.remove('hidden');
+                // Forçar a exibição da tela de ligação
+                console.log('🔧 Forçando exibição da tela de ligação...');
+                
+                // Esconder outras telas primeiro
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) {
+                    loadingScreen.classList.add('hidden');
+                    console.log('✅ Loading screen escondida');
+                }
 
-                console.log('Tela de ligação deveria estar visível agora');
-                console.log('callScreen classes:', callScreen.className);
+                // Esconder UI do jogo
+                const backpackIcon = document.getElementById('backpack-icon');
+                if (backpackIcon) {
+                    backpackIcon.style.display = 'none';
+                    console.log('✅ Backpack icon escondido');
+                }
+
+                const distanceMeter = document.getElementById('distance-meter');
+                if (distanceMeter) {
+                    distanceMeter.classList.remove('show');
+                    console.log('✅ Distance meter escondido');
+                }
+
+                // Mostrar tela de ligação com múltiplas abordagens
+                callScreen.classList.remove('hidden');
+                callScreen.style.display = 'flex';
+                callScreen.style.opacity = '1';
+                callScreen.style.visibility = 'visible';
+                callScreen.style.zIndex = '1000';
+
+                console.log('📱 Tela de ligação configurada');
+                console.log('Classes atuais:', callScreen.className);
+                console.log('Style display:', callScreen.style.display);
+                console.log('Style opacity:', callScreen.style.opacity);
+                console.log('Style visibility:', callScreen.style.visibility);
+                console.log('Style z-index:', callScreen.style.zIndex);
 
                 // Iniciar vibração de ligação recebida
                 startIncomingCallEffects();
@@ -1763,12 +1844,19 @@
                 // Configurar eventos dos botões
                 if (answerButton) {
                     answerButton.addEventListener('click', answerCall, { once: true });
-                    console.log('Event listener adicionado ao botão de atender');
+                    console.log('✅ Event listener adicionado ao botão de atender');
+                } else {
+                    console.error('❌ answerButton não encontrado');
                 }
+                
                 if (declineButton) {
                     declineButton.addEventListener('click', declineCall, { once: true });
-                    console.log('Event listener adicionado ao botão de recusar');
+                    console.log('✅ Event listener adicionado ao botão de recusar');
+                } else {
+                    console.error('❌ declineButton não encontrado');
                 }
+
+                console.log('=== LIGAÇÃO CONFIGURADA ===');
             }
 
             // Tornar função disponível globalmente

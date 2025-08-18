@@ -33,7 +33,7 @@ class StrangerEffects {
         const glitchElements = document.querySelectorAll('.glitch-text');
         glitchElements.forEach(element => {
             element.setAttribute('data-text', element.textContent);
-            
+
             // Glitch ocasional
             setInterval(() => {
                 if (Math.random() < 0.1) { // 10% de chance
@@ -68,7 +68,7 @@ class StrangerEffects {
             box-shadow: inset 0 0 100px rgba(231, 38, 38, 0.1);
             animation: screen-pulse 4s ease-in-out infinite;
         `;
-        
+
         document.body.appendChild(pulseOverlay);
 
         // Adicionar keyframes para o pulso
@@ -118,7 +118,7 @@ class StrangerEffects {
             z-index: 1;
             overflow: hidden;
         `;
-        
+
         document.body.appendChild(particleContainer);
 
         // Criar partículas
@@ -178,7 +178,7 @@ class StrangerEffects {
     typeWriter(element, text, speed = 50) {
         element.textContent = '';
         let i = 0;
-        
+
         const timer = setInterval(() => {
             if (i < text.length) {
                 element.textContent += text.charAt(i);
@@ -193,7 +193,7 @@ class StrangerEffects {
     // Efeito de shake para elementos
     shakeElement(element, duration = 500) {
         element.style.animation = `shake 0.1s infinite`;
-        
+
         setTimeout(() => {
             element.style.animation = '';
         }, duration);
@@ -263,10 +263,10 @@ class StrangerEffects {
     // Método para remover todos os efeitos de um elemento
     removeEffects(element) {
         const effectClasses = [
-            'neon-border', 'pulse-glow', 'glitch-text', 
+            'neon-border', 'pulse-glow', 'glitch-text',
             'typewriter', 'fade-in-up', 'important-pulse'
         ];
-        
+
         effectClasses.forEach(className => {
             element.classList.remove(className);
         });
@@ -276,7 +276,7 @@ class StrangerEffects {
 // Inicializar efeitos quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', () => {
     window.strangerEffects = new StrangerEffects();
-    
+
     // Adicionar efeitos a elementos específicos
     const logo = document.getElementById('logo');
     if (logo) {
