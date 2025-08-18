@@ -14,7 +14,32 @@
         window.THREE = window.THREE || AFRAME.THREE;
     </script>
 
+    <!-- Efeitos visuais customizados -->
+    <script src="assets/js/stranger-effects.js"></script>
+
+    <!-- Fontes do Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS customizado para tema Stranger Things -->
+    <link rel="stylesheet" href="assets/css/stranger-things-style.css">
+
     <style>
+        :root {
+            --st-red: #e72626;
+            --st-dark-red: #b71c1c;
+            --st-yellow: #ffd54f;
+            --st-dark-bg: #0a0a0a;
+            --st-darker-bg: #050505;
+            --st-light-text: #ffffff;
+            --st-dim-text: #cccccc;
+            --st-green: #4caf50;
+            --st-orange: #ff9800;
+        }
+
         html,
         body {
             margin: 0;
@@ -22,7 +47,8 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: 'Orbitron', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--st-dark-bg);
         }
 
         #overlay {
@@ -45,13 +71,46 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #000;
-            color: #fff;
+            background: linear-gradient(135deg, var(--st-darker-bg) 0%, var(--st-dark-bg) 50%, var(--st-darker-bg) 100%);
+            color: var(--st-light-text);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             transition: opacity 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efeito de partículas flutuantes */
+        .ui-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, var(--st-red), transparent),
+                radial-gradient(2px 2px at 40px 70px, var(--st-yellow), transparent),
+                radial-gradient(1px 1px at 90px 40px, var(--st-red), transparent),
+                radial-gradient(1px 1px at 130px 80px, var(--st-yellow), transparent),
+                radial-gradient(2px 2px at 160px 30px, var(--st-red), transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: float-particles 20s linear infinite;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        @keyframes float-particles {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+            }
         }
 
         .ui-screen.hidden {
@@ -63,6 +122,23 @@
             width: 80%;
             max-width: 400px;
             margin-bottom: 30px;
+            filter:
+                drop-shadow(0 0 10px var(--st-red)) drop-shadow(0 0 20px var(--st-red)) drop-shadow(0 0 30px var(--st-red)) drop-shadow(0 0 40px var(--st-dark-red));
+            animation: logo-glow 3s ease-in-out infinite alternate;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes logo-glow {
+            0% {
+                filter:
+                    drop-shadow(0 0 10px var(--st-red)) drop-shadow(0 0 20px var(--st-red)) drop-shadow(0 0 30px var(--st-red));
+            }
+
+            100% {
+                filter:
+                    drop-shadow(0 0 15px var(--st-red)) drop-shadow(0 0 25px var(--st-red)) drop-shadow(0 0 35px var(--st-red)) drop-shadow(0 0 45px var(--st-dark-red));
+            }
         }
 
         #progress-bar-container {
@@ -93,18 +169,55 @@
 
         #enter-button {
             display: none;
-            /* Começa escondido */
             margin-top: 40px;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #fff;
-            background-color: #e72626;
-            border: none;
-            border-radius: 5px;
+            padding: 18px 40px;
+            font-size: 1.3em;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+            color: var(--st-light-text);
+            background: linear-gradient(135deg, var(--st-red) 0%, var(--st-dark-red) 100%);
+            border: 2px solid var(--st-red);
+            border-radius: 8px;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow:
+                0 0 20px rgba(231, 38, 38, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        #enter-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        #enter-button:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 0 30px rgba(231, 38, 38, 0.8),
+                0 5px 15px rgba(0, 0, 0, 0.3),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+            border-color: var(--st-yellow);
+        }
+
+        #enter-button:hover::before {
+            left: 100%;
+        }
+
+        #enter-button:active {
+            transform: translateY(0);
+            box-shadow:
+                0 0 20px rgba(231, 38, 38, 0.6),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
         }
 
         /* Ícone da mochila */
@@ -171,16 +284,37 @@
         }
 
         #backpack-content {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-radius: 15px;
-            padding: 25px;
+            background: linear-gradient(135deg, var(--st-darker-bg) 0%, var(--st-dark-bg) 50%, var(--st-darker-bg) 100%);
+            border-radius: 20px;
+            padding: 30px;
             max-width: 90%;
             max-height: 80%;
             overflow-y: auto;
-            border: 2px solid #e72626;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            color: #fff;
+            border: 3px solid var(--st-red);
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.7),
+                0 0 30px rgba(231, 38, 38, 0.3),
+                inset 0 0 30px rgba(231, 38, 38, 0.1);
+            color: var(--st-light-text);
             position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        #backpack-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                repeating-linear-gradient(90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(231, 38, 38, 0.03) 2px,
+                    rgba(231, 38, 38, 0.03) 4px);
+            pointer-events: none;
+            border-radius: 20px;
         }
 
         #backpack-header {
@@ -193,12 +327,40 @@
         }
 
         #backpack-title {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #fff;
+            font-size: 1.6em;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+            color: var(--st-light-text);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow:
+                0 0 10px var(--st-red),
+                2px 2px 0px var(--st-dark-red),
+                -2px -2px 0px var(--st-yellow);
+            animation: subtle-glitch 4s infinite;
+        }
+
+        @keyframes subtle-glitch {
+
+            0%,
+            90%,
+            100% {
+                text-shadow:
+                    0 0 10px var(--st-red),
+                    2px 2px 0px var(--st-dark-red),
+                    -2px -2px 0px var(--st-yellow);
+            }
+
+            95% {
+                text-shadow:
+                    0 0 15px var(--st-red),
+                    -2px 2px 0px var(--st-dark-red),
+                    2px -2px 0px var(--st-yellow);
+                transform: translateX(1px);
+            }
         }
 
         #close-backpack {
@@ -289,23 +451,47 @@
         /* Medidor de distância na tela principal */
         #distance-meter {
             position: fixed;
-            bottom: 20px;
+            bottom: 25px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 15;
-            background: rgba(0, 0, 0, 0.9);
-            color: #fff;
-            padding: 15px 25px;
-            border-radius: 30px;
-            border: 2px solid #e72626;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            font-size: 1.1em;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
+            color: var(--st-light-text);
+            padding: 18px 30px;
+            border-radius: 35px;
+            border: 3px solid var(--st-red);
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.5),
+                0 0 25px rgba(231, 38, 38, 0.4),
+                inset 0 0 25px rgba(231, 38, 38, 0.1);
+            font-size: 1.2em;
+            font-family: 'Share Tech Mono', monospace;
+            font-weight: 600;
             text-align: center;
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             display: none;
-            min-width: 250px;
+            min-width: 280px;
             max-width: 90vw;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #distance-meter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                repeating-linear-gradient(90deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(231, 38, 38, 0.05) 3px,
+                    rgba(231, 38, 38, 0.05) 6px);
+            pointer-events: none;
+            border-radius: 35px;
         }
 
         #distance-meter.show {
@@ -341,19 +527,43 @@
         }
 
         .toast {
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 15px 20px;
-            border-radius: 25px;
-            margin-bottom: 10px;
-            border: 2px solid #e72626;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
+            color: var(--st-light-text);
+            padding: 18px 25px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            border: 2px solid var(--st-red);
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(231, 38, 38, 0.3),
+                inset 0 0 20px rgba(231, 38, 38, 0.1);
             transform: translateY(100px);
             opacity: 0;
-            transition: all 0.3s ease;
-            max-width: 80vw;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 85vw;
             text-align: center;
-            font-size: 1em;
+            font-size: 1.1em;
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            letter-spacing: 1px;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .toast.show::before {
+            left: 100%;
         }
 
         .toast.show {
@@ -727,20 +937,43 @@
         /* Sistema de Combate do Demogorgon */
         #combat-ui {
             position: fixed;
-            top: 20px;
+            top: 25px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 15;
-            background: rgba(0, 0, 0, 0.9);
-            color: #fff;
-            padding: 15px 25px;
-            border-radius: 15px;
-            border: 2px solid #e72626;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
+            color: var(--st-light-text);
+            padding: 20px 30px;
+            border-radius: 20px;
+            border: 3px solid var(--st-red);
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.5),
+                0 0 25px rgba(231, 38, 38, 0.4),
+                inset 0 0 25px rgba(231, 38, 38, 0.1);
             display: none;
-            min-width: 300px;
+            min-width: 320px;
             text-align: center;
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
+            font-family: 'Orbitron', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #combat-ui::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(231, 38, 38, 0.03) 2px,
+                    rgba(231, 38, 38, 0.03) 4px);
+            pointer-events: none;
+            border-radius: 20px;
         }
 
         #combat-ui.show {
@@ -927,6 +1160,135 @@
         .demogorgon-targeted {
             animation: demogorgon-targeted 1s ease-in-out infinite;
         }
+
+        /* Efeitos adicionais para atmosfera Stranger Things */
+
+        /* Efeito de interferência na tela */
+        @keyframes screen-interference {
+
+            0%,
+            100% {
+                filter: contrast(1) brightness(1);
+                transform: translateX(0);
+            }
+
+            2% {
+                filter: contrast(1.2) brightness(1.1);
+                transform: translateX(2px);
+            }
+
+            4% {
+                filter: contrast(0.9) brightness(0.9);
+                transform: translateX(-1px);
+            }
+
+            6% {
+                filter: contrast(1.1) brightness(1.05);
+                transform: translateX(1px);
+            }
+        }
+
+        /* Aplicar interferência ocasional */
+        .ui-screen.interference {
+            animation: screen-interference 0.1s;
+        }
+
+        /* Efeito de scan lines */
+        .scan-lines::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.03) 2px,
+                    rgba(255, 255, 255, 0.03) 4px);
+            pointer-events: none;
+            animation: scan-lines-move 0.1s linear infinite;
+        }
+
+        @keyframes scan-lines-move {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(4px);
+            }
+        }
+
+        /* Efeito de borda neon para elementos importantes */
+        .neon-border {
+            position: relative;
+        }
+
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--st-red), var(--st-yellow), var(--st-red));
+            border-radius: inherit;
+            z-index: -1;
+            filter: blur(1px);
+            opacity: 0.7;
+        }
+
+        /* Efeito de pulsação para elementos ativos */
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow:
+                    0 0 20px rgba(231, 38, 38, 0.3),
+                    inset 0 0 20px rgba(231, 38, 38, 0.1);
+            }
+
+            100% {
+                box-shadow:
+                    0 0 30px rgba(231, 38, 38, 0.6),
+                    inset 0 0 30px rgba(231, 38, 38, 0.2);
+            }
+        }
+
+        /* Efeito de digitação para textos */
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid var(--st-red);
+            white-space: nowrap;
+            animation:
+                typing 2s steps(40, end),
+                blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent;
+            }
+
+            50% {
+                border-color: var(--st-red);
+            }
+        }
     </style>
 </head>
 
@@ -984,14 +1346,14 @@
 
     <!-- UI Overlay -->
     <div id="overlay">
-        <div id="loading-screen" class="ui-screen ui-element">
+        <div id="loading-screen" class="ui-screen ui-element scan-lines">
             <img id="logo" src="assets/img/stranger-things-logo.png" alt="Stranger Things Logo">
-            <div id="progress-bar-container">
+            <div id="progress-bar-container" class="neon-border">
                 <div id="progress-bar"></div>
             </div>
-            <p id="loading-info">8Carregando assets...</p>
+            <p id="loading-info" class="typewriter">Carregando assets...</p>
 
-            <button id="enter-button" class="ui-element">Entrar no Mundo Invertido</button>
+            <button id="enter-button" class="ui-element pulse-glow">Entrar no Mundo Invertido</button>
         </div>
 
         <!-- Ícone da mochila -->
