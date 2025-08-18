@@ -120,6 +120,12 @@
       "uri": "scene.bin"
     }
   ],
+  "extensionsRequired": [
+    "KHR_materials_pbrSpecularGlossiness"
+  ],
+  "extensionsUsed": [
+    "KHR_materials_pbrSpecularGlossiness"
+  ],
   "images": [
     {
       "uri": "textures/blinn2SG_diffuse.png"
@@ -133,18 +139,29 @@
   ],
   "materials": [
     {
-      "name": "blinn2SG",
-      "pbrMetallicRoughness": {
-        "baseColorFactor": [1.0, 1.0, 1.0, 1.0],
-        "baseColorTexture": {
-          "index": 0
-        },
-        "metallicFactor": 0.1,
-        "roughnessFactor": 0.3,
-        "metallicRoughnessTexture": {
-          "index": 1
+      "extensions": {
+        "KHR_materials_pbrSpecularGlossiness": {
+          "diffuseFactor": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "diffuseTexture": {
+            "index": 0
+          },
+          "glossinessFactor": 1.0,
+          "specularFactor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "specularGlossinessTexture": {
+            "index": 1
+          }
         }
       },
+      "name": "blinn2SG",
       "normalTexture": {
         "index": 2
       }

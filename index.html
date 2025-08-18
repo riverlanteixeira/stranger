@@ -934,7 +934,8 @@
     <!-- A-Frame Scene com Hit-Test -->
     <a-scene id="ar-scene"
         webxr="requiredFeatures: hit-test, local-floor; optionalFeatures: dom-overlay; overlayElement: #overlay;"
-        vr-mode-ui="enabled: false;" renderer="logarithmicDepthBuffer: true; colorManagement: true;"
+        vr-mode-ui="enabled: false;"
+        renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true; physicallyCorrectLights: true;"
         background="color: transparent;">
         <a-assets>
             <a-asset-item id="bike-model" src="assets/models/bicicleta-will.glb"></a-asset-item>
@@ -949,8 +950,9 @@
         </a-assets>
 
         <!-- Iluminação da Cena -->
-        <a-light type="ambient" color="#FFF" intensity="0.7"></a-light>
-        <a-light type="directional" color="#FFF" intensity="0.8" position="-1 2 1"></a-light>
+        <a-light type="ambient" color="#FFF" intensity="0.8"></a-light>
+        <a-light type="directional" color="#FFF" intensity="1.0" position="-1 2 1"></a-light>
+        <a-light type="point" color="#FFF" intensity="0.6" position="2 2 2"></a-light>
 
         <a-camera fov="80">
             <a-cursor id="cursor"
@@ -974,7 +976,7 @@
         <a-entity id="machado" class="collectible" gltf-model="#machado-model" collectible-object
             visible="false"></a-entity>
         <a-entity id="walkie-talkie" class="collectible" gltf-model="#walkie-talkie-model" collectible-object
-            visible="false"></a-entity>
+            material="shader: standard; transparent: false;" visible="false"></a-entity>
         <a-entity id="demogorgon" class="enemy" gltf-model="#demogorgon-model" demogorgon-combat
             visible="false"></a-entity>
         <a-entity id="will-mundo-invertido" class="collectible" gltf-model="#will-mundo-invertido-model"
@@ -2106,7 +2108,7 @@
         AFRAME.registerComponent('demogorgon-combat', {
             schema: {
                 maxHealth: { type: 'number', default: 100 },
-                damage: { type: 'number', default: 25 },
+                damage: { type: 'number', default: 20 },
                 isActive: { type: 'boolean', default: false }
             },
 
