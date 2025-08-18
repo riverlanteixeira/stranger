@@ -1113,17 +1113,35 @@
             style="position: fixed; bottom: 80px; right: 20px; z-index: 30; padding: 10px; background: #00ff00; color: black; border: none; border-radius: 5px; display: block;">
             Testar Machado
         </button>
-        
+
         <!-- Botão para forçar machado -->
         <button id="force-machado"
             style="position: fixed; bottom: 140px; right: 20px; z-index: 30; padding: 10px; background: #ffff00; color: black; border: none; border-radius: 5px; display: block;">
             Forçar Machado
         </button>
-        
+
         <!-- Botão para verificar modelo -->
         <button id="check-model"
             style="position: fixed; bottom: 200px; right: 20px; z-index: 30; padding: 10px; background: #ff00ff; color: white; border: none; border-radius: 5px; display: block;">
             Verificar Modelo
+        </button>
+        
+        <!-- Botão para criar cubo teste -->
+        <button id="create-cube"
+            style="position: fixed; bottom: 260px; right: 20px; z-index: 30; padding: 10px; background: #00ffff; color: black; border: none; border-radius: 5px; display: block;">
+            Criar Cubo Teste
+        </button>
+        
+        <!-- Botão para substituir machado por cubo -->
+        <button id="replace-machado"
+            style="position: fixed; bottom: 320px; right: 20px; z-index: 30; padding: 10px; background: #ffa500; color: black; border: none; border-radius: 5px; display: block;">
+            Substituir Machado
+        </button>
+        
+        <!-- Botão para testar carregamento direto -->
+        <button id="test-direct-load"
+            style="position: fixed; bottom: 380px; right: 20px; z-index: 30; padding: 10px; background: #800080; color: white; border: none; border-radius: 5px; display: block;">
+            Teste Direto GLB
         </button>
 
 
@@ -1744,62 +1762,62 @@
 
                     checkProximityToLocations();
                 });
-                
+
                 // Botão para forçar machado a aparecer
                 const forceMachadoButton = document.getElementById('force-machado');
                 forceMachadoButton.addEventListener('click', () => {
                     console.log('=== FORÇANDO MACHADO A APARECER ===');
-                    
+
                     const machadoEntity = document.getElementById('machado');
                     if (!machadoEntity) {
                         console.error('Entidade machado não encontrada!');
                         return;
                     }
-                    
+
                     // Posicionar o machado na frente da câmera
                     const camera = document.querySelector('a-camera');
                     if (camera) {
                         const cameraPosition = camera.object3D.position;
                         const cameraRotation = camera.object3D.rotation;
-                        
+
                         // Calcular posição na frente da câmera
                         const distance = 2; // 2 metros na frente
                         const x = cameraPosition.x + Math.sin(cameraRotation.y) * distance;
                         const y = cameraPosition.y - 0.5; // Um pouco abaixo da câmera
                         const z = cameraPosition.z - Math.cos(cameraRotation.y) * distance;
-                        
+
                         console.log(`Posicionando machado em: x=${x}, y=${y}, z=${z}`);
-                        
+
                         // Definir posição e escala
                         machadoEntity.object3D.position.set(x, y, z);
                         machadoEntity.object3D.scale.set(5, 5, 5); // Escala do machado
-                        
+
                         // Tornar visível
                         machadoEntity.setAttribute('visible', true);
                         machadoEntity.classList.add('collectible-ready');
-                        
+
                         console.log('Machado forçado a aparecer!');
                         console.log('- Posição:', machadoEntity.object3D.position);
                         console.log('- Escala:', machadoEntity.object3D.scale);
                         console.log('- Visível:', machadoEntity.getAttribute('visible'));
-                        
+
                         // Atualizar estado do jogo
                         currentObjectIndex = 4;
                         window.currentObjectIndex = 4;
                         currentObjectPlaced = true;
                         window.currentObjectPlaced = true;
-                        
+
                         showToast('Machado forçado a aparecer! Toque para coletar.', 'success');
                     } else {
                         console.error('Câmera não encontrada!');
                     }
                 });
-                
+
                 // Botão para verificar modelo
                 const checkModelButton = document.getElementById('check-model');
                 checkModelButton.addEventListener('click', () => {
                     console.log('=== VERIFICANDO MODELO DO MACHADO ===');
-                    
+
                     // Verificar asset
                     const machadoAsset = document.getElementById('machado-model');
                     console.log('Asset machado-model encontrado:', !!machadoAsset);
@@ -1807,7 +1825,7 @@
                         console.log('- Src do asset:', machadoAsset.getAttribute('src'));
                         console.log('- Asset carregado:', machadoAsset.hasLoaded);
                     }
-                    
+
                     // Verificar entidade
                     const machadoEntity = document.getElementById('machado');
                     console.log('Entidade machado encontrada:', !!machadoEntity);
@@ -1818,7 +1836,7 @@
                         console.log('- Posição:', machadoEntity.object3D.position);
                         console.log('- Escala:', machadoEntity.object3D.scale);
                         console.log('- Componentes:', Object.keys(machadoEntity.components || {}));
-                        
+
                         // Verificar se o modelo 3D foi carregado
                         const model = machadoEntity.getObject3D('mesh');
                         console.log('- Modelo 3D carregado:', !!model);
@@ -1827,13 +1845,157 @@
                             console.log('- Bounding box:', model.userData);
                         }
                     }
-                    
+
                     // Listar todos os assets carregados
                     const assets = document.querySelectorAll('a-asset-item');
                     console.log('=== TODOS OS ASSETS ===');
                     assets.forEach(asset => {
                         console.log(`${asset.id}: ${asset.getAttribute('src')} - Carregado: ${asset.hasLoaded}`);
                     });
+                });
+                
+                // Botão para criar cubo de teste
+                const createCubeButton = document.getElementById('create-cube');
+                createCubeButton.addEventListener('click', () => {
+                    console.log('=== CRIANDO CUBO DE TESTE ===');
+                    
+                    // Remover cubo existente se houver
+                    const existingCube = document.getElementById('test-cube');
+                    if (existingCube) {
+                        existingCube.remove();
+                    }
+                    
+                    // Criar novo cubo
+                    const scene = document.querySelector('a-scene');
+                    const cube = document.createElement('a-box');
+                    cube.setAttribute('id', 'test-cube');
+                    cube.setAttribute('class', 'collectible');
+                    cube.setAttribute('color', '#ff0000');
+                    cube.setAttribute('width', '0.5');
+                    cube.setAttribute('height', '0.5');
+                    cube.setAttribute('depth', '0.5');
+                    cube.setAttribute('collectible-object', '');
+                    
+                    // Posicionar na frente da câmera
+                    const camera = document.querySelector('a-camera');
+                    if (camera) {
+                        const cameraPosition = camera.object3D.position;
+                        const cameraRotation = camera.object3D.rotation;
+                        
+                        const distance = 2;
+                        const x = cameraPosition.x + Math.sin(cameraRotation.y) * distance;
+                        const y = cameraPosition.y - 0.5;
+                        const z = cameraPosition.z - Math.cos(cameraRotation.y) * distance;
+                        
+                        cube.setAttribute('position', `${x} ${y} ${z}`);
+                        cube.setAttribute('visible', 'true');
+                        
+                        scene.appendChild(cube);
+                        
+                        console.log('Cubo de teste criado na posição:', x, y, z);
+                        showToast('Cubo de teste criado! Toque para testar coleta.', 'info');
+                        
+                        // Adicionar animação de pulso
+                        cube.classList.add('collectible-ready');
+                    }
+                });
+                
+                // Botão para substituir machado por cubo
+                const replaceMachadoButton = document.getElementById('replace-machado');
+                replaceMachadoButton.addEventListener('click', () => {
+                    console.log('=== SUBSTITUINDO MACHADO POR CUBO ===');
+                    
+                    const machadoEntity = document.getElementById('machado');
+                    if (!machadoEntity) {
+                        console.error('Entidade machado não encontrada!');
+                        return;
+                    }
+                    
+                    // Remover o modelo GLB
+                    machadoEntity.removeAttribute('gltf-model');
+                    
+                    // Adicionar geometria de cubo
+                    machadoEntity.setAttribute('geometry', 'primitive: box; width: 0.5; height: 0.5; depth: 0.5');
+                    machadoEntity.setAttribute('material', 'color: #8B4513'); // Cor marrom como um machado
+                    
+                    // Posicionar na frente da câmera
+                    const camera = document.querySelector('a-camera');
+                    if (camera) {
+                        const cameraPosition = camera.object3D.position;
+                        const cameraRotation = camera.object3D.rotation;
+                        
+                        const distance = 2;
+                        const x = cameraPosition.x + Math.sin(cameraRotation.y) * distance;
+                        const y = cameraPosition.y - 0.5;
+                        const z = cameraPosition.z - Math.cos(cameraRotation.y) * distance;
+                        
+                        machadoEntity.object3D.position.set(x, y, z);
+                        machadoEntity.object3D.scale.set(1, 1, 1);
+                        
+                        // Tornar visível
+                        machadoEntity.setAttribute('visible', true);
+                        machadoEntity.classList.add('collectible-ready');
+                        
+                        console.log('Machado substituído por cubo marrom!');
+                        console.log('- Posição:', machadoEntity.object3D.position);
+                        console.log('- Visível:', machadoEntity.getAttribute('visible'));
+                        
+                        // Atualizar estado do jogo
+                        currentObjectIndex = 4;
+                        window.currentObjectIndex = 4;
+                        currentObjectPlaced = true;
+                        window.currentObjectPlaced = true;
+                        
+                        showToast('Machado substituído por cubo! Toque para coletar.', 'success');
+                    }
+                });
+                
+                // Botão para testar carregamento direto do GLB
+                const testDirectLoadButton = document.getElementById('test-direct-load');
+                testDirectLoadButton.addEventListener('click', () => {
+                    console.log('=== TESTANDO CARREGAMENTO DIRETO DO GLB ===');
+                    
+                    // Criar uma nova entidade para testar
+                    const scene = document.querySelector('a-scene');
+                    const testEntity = document.createElement('a-entity');
+                    testEntity.setAttribute('id', 'machado-test-direct');
+                    testEntity.setAttribute('gltf-model', 'assets/models/machado.glb'); // Carregamento direto
+                    
+                    // Posicionar na frente da câmera
+                    const camera = document.querySelector('a-camera');
+                    if (camera) {
+                        const cameraPosition = camera.object3D.position;
+                        const cameraRotation = camera.object3D.rotation;
+                        
+                        const distance = 3;
+                        const x = cameraPosition.x + Math.sin(cameraRotation.y) * distance;
+                        const y = cameraPosition.y;
+                        const z = cameraPosition.z - Math.cos(cameraRotation.y) * distance;
+                        
+                        testEntity.setAttribute('position', `${x} ${y} ${z}`);
+                        testEntity.setAttribute('scale', '5 5 5');
+                        testEntity.setAttribute('visible', 'true');
+                        
+                        scene.appendChild(testEntity);
+                        
+                        console.log('Entidade de teste criada com carregamento direto');
+                        console.log('- Posição:', x, y, z);
+                        
+                        // Verificar se carregou após um tempo
+                        setTimeout(() => {
+                            const model = testEntity.getObject3D('mesh');
+                            console.log('Modelo carregado após 3s:', !!model);
+                            if (model) {
+                                console.log('- Filhos do modelo:', model.children.length);
+                                showToast('Modelo GLB carregou com sucesso!', 'success');
+                            } else {
+                                console.error('Modelo GLB não carregou!');
+                                showToast('Erro: Modelo GLB não carregou!', 'warning');
+                            }
+                        }, 3000);
+                        
+                        showToast('Testando carregamento direto do GLB...', 'info');
+                    }
                 });
             }
 
