@@ -1107,11 +1107,23 @@
             style="position: fixed; bottom: 20px; right: 20px; z-index: 30; padding: 10px; background: #ff0000; color: white; border: none; border-radius: 5px; display: none;">
             Coletar Item (Debug)
         </button>
-        
+
         <!-- Botão de teste do machado -->
         <button id="test-machado"
             style="position: fixed; bottom: 80px; right: 20px; z-index: 30; padding: 10px; background: #00ff00; color: black; border: none; border-radius: 5px; display: block;">
             Testar Machado
+        </button>
+        
+        <!-- Botão para forçar machado -->
+        <button id="force-machado"
+            style="position: fixed; bottom: 140px; right: 20px; z-index: 30; padding: 10px; background: #ffff00; color: black; border: none; border-radius: 5px; display: block;">
+            Forçar Machado
+        </button>
+        
+        <!-- Botão para verificar modelo -->
+        <button id="check-model"
+            style="position: fixed; bottom: 200px; right: 20px; z-index: 30; padding: 10px; background: #ff00ff; color: white; border: none; border-radius: 5px; display: block;">
+            Verificar Modelo
         </button>
 
 
@@ -1697,7 +1709,7 @@
                 setInterval(() => {
                     debugButton.style.display = (currentObjectPlaced && currentObjectIndex < objectsToPlace.length) ? 'block' : 'none';
                 }, 1000);
-                
+
                 // Botão de teste do machado
                 const testMachadoButton = document.getElementById('test-machado');
                 testMachadoButton.addEventListener('click', () => {
@@ -1709,7 +1721,7 @@
                     console.log('- currentObjectPlaced:', currentObjectPlaced);
                     console.log('- canPlace:', canPlace);
                     console.log('- locationUnlocked:', locationUnlocked);
-                    
+
                     // Forçar o índice para o machado (índice 4)
                     currentObjectIndex = 4;
                     window.currentObjectIndex = 4;
@@ -1717,11 +1729,11 @@
                     window.currentObjectPlaced = false;
                     canPlace = true;
                     locationUnlocked[4] = true;
-                    
+
                     console.log('Forçando estado para machado:');
                     console.log('- Novo currentObjectIndex:', currentObjectIndex);
                     console.log('- Novo objeto atual:', objectsToPlace[currentObjectIndex]);
-                    
+
                     // Verificar se a entidade do machado existe
                     const machadoEntity = document.getElementById('machado');
                     console.log('- Entidade machado encontrada:', !!machadoEntity);
@@ -1729,8 +1741,99 @@
                         console.log('- Machado visível:', machadoEntity.getAttribute('visible'));
                         console.log('- Machado classes:', machadoEntity.className);
                     }
-                    
+
                     checkProximityToLocations();
+                });
+                
+                // Botão para forçar machado a aparecer
+                const forceMachadoButton = document.getElementById('force-machado');
+                forceMachadoButton.addEventListener('click', () => {
+                    console.log('=== FORÇANDO MACHADO A APARECER ===');
+                    
+                    const machadoEntity = document.getElementById('machado');
+                    if (!machadoEntity) {
+                        console.error('Entidade machado não encontrada!');
+                        return;
+                    }
+                    
+                    // Posicionar o machado na frente da câmera
+                    const camera = document.querySelector('a-camera');
+                    if (camera) {
+                        const cameraPosition = camera.object3D.position;
+                        const cameraRotation = camera.object3D.rotation;
+                        
+                        // Calcular posição na frente da câmera
+                        const distance = 2; // 2 metros na frente
+                        const x = cameraPosition.x + Math.sin(cameraRotation.y) * distance;
+                        const y = cameraPosition.y - 0.5; // Um pouco abaixo da câmera
+                        const z = cameraPosition.z - Math.cos(cameraRotation.y) * distance;
+                        
+                        console.log(`Posicionando machado em: x=${x}, y=${y}, z=${z}`);
+                        
+                        // Definir posição e escala
+                        machadoEntity.object3D.position.set(x, y, z);
+                        machadoEntity.object3D.scale.set(5, 5, 5); // Escala do machado
+                        
+                        // Tornar visível
+                        machadoEntity.setAttribute('visible', true);
+                        machadoEntity.classList.add('collectible-ready');
+                        
+                        console.log('Machado forçado a aparecer!');
+                        console.log('- Posição:', machadoEntity.object3D.position);
+                        console.log('- Escala:', machadoEntity.object3D.scale);
+                        console.log('- Visível:', machadoEntity.getAttribute('visible'));
+                        
+                        // Atualizar estado do jogo
+                        currentObjectIndex = 4;
+                        window.currentObjectIndex = 4;
+                        currentObjectPlaced = true;
+                        window.currentObjectPlaced = true;
+                        
+                        showToast('Machado forçado a aparecer! Toque para coletar.', 'success');
+                    } else {
+                        console.error('Câmera não encontrada!');
+                    }
+                });
+                
+                // Botão para verificar modelo
+                const checkModelButton = document.getElementById('check-model');
+                checkModelButton.addEventListener('click', () => {
+                    console.log('=== VERIFICANDO MODELO DO MACHADO ===');
+                    
+                    // Verificar asset
+                    const machadoAsset = document.getElementById('machado-model');
+                    console.log('Asset machado-model encontrado:', !!machadoAsset);
+                    if (machadoAsset) {
+                        console.log('- Src do asset:', machadoAsset.getAttribute('src'));
+                        console.log('- Asset carregado:', machadoAsset.hasLoaded);
+                    }
+                    
+                    // Verificar entidade
+                    const machadoEntity = document.getElementById('machado');
+                    console.log('Entidade machado encontrada:', !!machadoEntity);
+                    if (machadoEntity) {
+                        console.log('- gltf-model:', machadoEntity.getAttribute('gltf-model'));
+                        console.log('- Visível:', machadoEntity.getAttribute('visible'));
+                        console.log('- Classes:', machadoEntity.className);
+                        console.log('- Posição:', machadoEntity.object3D.position);
+                        console.log('- Escala:', machadoEntity.object3D.scale);
+                        console.log('- Componentes:', Object.keys(machadoEntity.components || {}));
+                        
+                        // Verificar se o modelo 3D foi carregado
+                        const model = machadoEntity.getObject3D('mesh');
+                        console.log('- Modelo 3D carregado:', !!model);
+                        if (model) {
+                            console.log('- Geometria:', model.children.length, 'objetos');
+                            console.log('- Bounding box:', model.userData);
+                        }
+                    }
+                    
+                    // Listar todos os assets carregados
+                    const assets = document.querySelectorAll('a-asset-item');
+                    console.log('=== TODOS OS ASSETS ===');
+                    assets.forEach(asset => {
+                        console.log(`${asset.id}: ${asset.getAttribute('src')} - Carregado: ${asset.hasLoaded}`);
+                    });
                 });
             }
 
@@ -1938,7 +2041,7 @@
             function placeObject(pose) {
                 const objectId = objectsToPlace[currentObjectIndex];
                 console.log(`=== COLOCANDO OBJETO: ${objectId} (índice ${currentObjectIndex}) ===`);
-                
+
                 const objectEntity = document.getElementById(objectId);
                 if (!objectEntity) {
                     console.error(`Entidade não encontrada para o objeto: ${objectId}`);
@@ -2011,7 +2114,7 @@
             function collectItem(id) {
                 console.log(`=== COLETANDO ITEM: ${id} ===`);
                 console.log(`Índice atual: ${currentObjectIndex}, Objeto esperado: ${objectsToPlace[currentObjectIndex]}`);
-                
+
                 if (collectibles[id]) {
                     console.log(`Item ${id} já foi coletado anteriormente`);
                     return;
