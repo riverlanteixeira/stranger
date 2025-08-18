@@ -9,7 +9,9 @@
     <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <!-- Fonts: heading (80s feel), body and mono -->
-    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Montserrat:wght@300;400;700&family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Montserrat:wght@300;400;700&family=Source+Code+Pro:wght@400;700&display=swap"
+        rel="stylesheet">
     <!-- Three.js já está incluído no A-Frame, mas vamos garantir acesso global -->
     <script>
         // Garantir que THREE esteja disponível globalmente
@@ -71,9 +73,9 @@
             mix-blend-mode: overlay;
             background-image:
                 /* fine grain */
-                radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
                 /* scanlines */
-                linear-gradient(rgba(0,0,0,0.06) 50%, rgba(255,255,255,0.01) 50%);
+                linear-gradient(rgba(0, 0, 0, 0.06) 50%, rgba(255, 255, 255, 0.01) 50%);
             background-size: 2px 2px, 100% 3px;
             background-repeat: repeat, repeat;
         }
@@ -83,7 +85,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at center, rgba(0,0,0,0) 35%, rgba(0,0,0,0.6) 100%);
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.6) 100%);
             pointer-events: none;
             mix-blend-mode: multiply;
         }
@@ -143,6 +145,13 @@
         .ui-screen.hidden {
             opacity: 0;
             pointer-events: none;
+            visibility: hidden;
+        }
+
+        .ui-screen:not(.hidden) {
+            opacity: 1;
+            pointer-events: auto;
+            visibility: visible;
         }
 
         #logo {
@@ -193,7 +202,9 @@
             letter-spacing: 2px;
         }
 
-        #enter-button:active { transform: translateY(1px) scale(0.995); }
+        #enter-button:active {
+            transform: translateY(1px) scale(0.995);
+        }
 
         /* Ícone da mochila */
         /* Backpack as leather patch with stitched look */
@@ -203,7 +214,7 @@
             right: 18px;
             width: 64px;
             height: 64px;
-            background: linear-gradient(180deg,#3b2a1f 0%, #6b432f 100%);
+            background: linear-gradient(180deg, #3b2a1f 0%, #6b432f 100%);
             border-radius: 10px;
             display: none;
             align-items: center;
@@ -211,11 +222,11 @@
             font-size: 1.8em;
             color: #fff;
             cursor: pointer;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
             transition: transform 0.25s ease, box-shadow 0.25s ease;
             z-index: 15;
-            border: 2px solid rgba(255,255,255,0.06);
-            background-image: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
         }
 
         #backpack-icon:hover {
@@ -243,7 +254,7 @@
             font-size: 0.8em;
             font-weight: 700;
             border: 2px solid #2b1a14;
-            box-shadow: 0 4px 12px rgba(231,38,38,0.25);
+            box-shadow: 0 4px 12px rgba(231, 38, 38, 0.25);
         }
 
         /* Modal da mochila */
@@ -342,26 +353,62 @@
 
 
         /* Polaroid-style collectibles list */
-        #collectibles-list { list-style: none; padding: 8px; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        #collectibles-list {
+            list-style: none;
+            padding: 8px;
+            margin: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
 
         #collectibles-list li {
-            background: #fff; color: #111; padding: 10px 10px 18px 10px; border-radius: 6px; box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-            position: relative; display:flex; align-items:flex-end; gap:10px; min-height:72px; font-weight:600;
+            background: #fff;
+            color: #111;
+            padding: 10px 10px 18px 10px;
+            border-radius: 6px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            min-height: 72px;
+            font-weight: 600;
             font-family: 'Montserrat', sans-serif;
         }
 
         #collectibles-list li::before {
             content: '';
-            position: absolute; top:8px; left:8px; right:8px; height:52%; background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(255,255,255,0.03)); border-radius:4px;
-            pointer-events:none;
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            height: 52%;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.03));
+            border-radius: 4px;
+            pointer-events: none;
         }
 
         /* stamp when found */
         #collectibles-list li.found::after {
-            content: 'FOUND'; position: absolute; top: 6px; right: 6px; background: rgba(231,38,38,0.95); color: white; padding:4px 8px; font-size:0.7em; font-weight:700; transform: rotate(-14deg); border-radius:4px; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            content: 'FOUND';
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(231, 38, 38, 0.95);
+            color: white;
+            padding: 4px 8px;
+            font-size: 0.7em;
+            font-weight: 700;
+            transform: rotate(-14deg);
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
         }
 
-        #collectibles-list li .item-status { margin-left:auto; font-size:1.1em; }
+        #collectibles-list li .item-status {
+            margin-left: auto;
+            font-size: 1.1em;
+        }
 
         #collectibles-list li .item-status {
             margin-left: auto;
@@ -445,7 +492,7 @@
             color: #4CAF50;
         }
 
-    /* Sistema de notificações toast */
+        /* Sistema de notificações toast */
         #toast-container {
             position: fixed;
             bottom: 80px;
@@ -580,8 +627,10 @@
         /* Tela de ligação do Dustin */
         /* Call screen as retro TV / portable set */
         #call-screen {
-            background: linear-gradient(180deg,#050507 0%, #0f0f14 50%);
-            position: relative; overflow:hidden; backdrop-filter: blur(3px);
+            background: linear-gradient(180deg, #050507 0%, #0f0f14 50%);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(3px);
         }
 
         /* Efeito de fundo animado */
@@ -624,23 +673,76 @@
 
         /* TV frame */
         #call-screen .tv-frame {
-            position: absolute; inset: 8px; border-radius: 18px; border: 6px solid #1b1b1b; box-shadow: 0 12px 40px rgba(0,0,0,0.8); pointer-events:none; z-index:1;
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.2));
+            position: absolute;
+            inset: 8px;
+            border-radius: 18px;
+            border: 6px solid #1b1b1b;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            z-index: 1;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.2));
         }
 
         /* Equalizer bars */
-        .equalizer { display:flex; gap:4px; align-items:flex-end; margin-top:12px; height:24px }
-        .equalizer .bar { width:5px; background:linear-gradient(180deg,#ff6b6b,#e72626); border-radius:2px; animation: eq 900ms infinite; }
-        .equalizer .bar:nth-child(1){animation-delay:0ms}
-        .equalizer .bar:nth-child(2){animation-delay:120ms}
-        .equalizer .bar:nth-child(3){animation-delay:240ms}
-        .equalizer .bar:nth-child(4){animation-delay:80ms}
-        .equalizer .bar:nth-child(5){animation-delay:160ms}
-        @keyframes eq{0%{height:6px}50%{height:22px}100%{height:6px}}
+        .equalizer {
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            margin-top: 12px;
+            height: 24px
+        }
+
+        .equalizer .bar {
+            width: 5px;
+            background: linear-gradient(180deg, #ff6b6b, #e72626);
+            border-radius: 2px;
+            animation: eq 900ms infinite;
+        }
+
+        .equalizer .bar:nth-child(1) {
+            animation-delay: 0ms
+        }
+
+        .equalizer .bar:nth-child(2) {
+            animation-delay: 120ms
+        }
+
+        .equalizer .bar:nth-child(3) {
+            animation-delay: 240ms
+        }
+
+        .equalizer .bar:nth-child(4) {
+            animation-delay: 80ms
+        }
+
+        .equalizer .bar:nth-child(5) {
+            animation-delay: 160ms
+        }
+
+        @keyframes eq {
+            0% {
+                height: 6px
+            }
+
+            50% {
+                height: 22px
+            }
+
+            100% {
+                height: 6px
+            }
+        }
 
         #dustin-avatar {
-            width: 160px; height:160px; border-radius:8px; margin-bottom:18px; border:6px solid rgba(231,38,38,0.85);
-            box-shadow: 0 18px 50px rgba(0,0,0,0.6), 0 0 40px rgba(231,38,38,0.18) inset; position:relative; overflow:hidden; background:#111;
+            width: 160px;
+            height: 160px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            border: 6px solid rgba(231, 38, 38, 0.85);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6), 0 0 40px rgba(231, 38, 38, 0.18) inset;
+            position: relative;
+            overflow: hidden;
+            background: #111;
         }
 
         /* Efeito de ondas no avatar */
@@ -669,8 +771,13 @@
         }
 
         #caller-name {
-            font-size: 1.8em; font-weight:700; margin-bottom:6px; color:#ffdcd1; font-family:'Alfa Slab One', 'Montserrat', sans-serif; letter-spacing:1px;
-            text-shadow: 0 2px 18px rgba(231,38,38,0.18);
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #ffdcd1;
+            font-family: 'Alfa Slab One', 'Montserrat', sans-serif;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 18px rgba(231, 38, 38, 0.18);
         }
 
         #caller-subtitle {
@@ -702,9 +809,27 @@
             display: none;
         }
 
-    #call-buttons { display:flex; gap:72px; align-items:center; margin-top:auto }
+        #call-buttons {
+            display: flex;
+            gap: 72px;
+            align-items: center;
+            margin-top: auto
+        }
 
-    .call-button { width:72px; height:72px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.9em; transition:all 0.25s ease; box-shadow:0 8px 26px rgba(0,0,0,0.45); position:relative }
+        .call-button {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.9em;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45);
+            position: relative
+        }
 
         .call-button:active {
             transform: scale(0.95);
@@ -741,7 +866,7 @@
         }
 
         /* Animações */
-    @keyframes pulse {
+        @keyframes pulse {
             0% {
                 transform: scale(1);
             }
@@ -1267,6 +1392,9 @@
             <p id="loading-info" class="typewriter">Carregando assets...</p>
 
             <button id="enter-button" class="ui-element pulse-glow">Entrar no Mundo Invertido</button>
+            <button id="test-call-button"
+                style="margin-top: 20px; padding: 10px 20px; background: #ff9800; color: white; border: none; border-radius: 5px; cursor: pointer;">🧪
+                Testar Ligação</button>
         </div>
 
         <!-- VHS overlay applied on top of UI -->
@@ -1277,6 +1405,8 @@
             🎒
             <div id="backpack-badge">0/7</div>
         </div>
+
+
 
         <!-- Modal da mochila -->
         <div id="backpack-modal" class="ui-element">
@@ -1344,7 +1474,9 @@
             </div>
             <div class="tv-frame"></div>
             <div id="call-content">
-                <div id="dustin-avatar" style="background-image:url('assets/img/dustin.png'); background-size:cover; background-position:center;"></div>
+                <div id="dustin-avatar"
+                    style="background-image:url('assets/img/dustin.png'); background-size:cover; background-position:center;">
+                </div>
                 <div id="caller-name">Dustin Henderson</div>
                 <div id="caller-subtitle">Hawkins, Indiana</div>
                 <div id="call-status">Chamada recebida...</div>
@@ -1463,6 +1595,14 @@
 
         console.log('Script carregado, aguardando DOM...');
 
+        // Elementos da ligação - definidos globalmente
+        let callScreen, answerButton, declineButton, callTimer, callStatus;
+        let dustinAudio = null;
+        let callStartTime = null;
+        let callTimerInterval = null;
+        let vibrationInterval = null;
+        let ringtonePlaying = false;
+
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM carregado - primeiro listener');
             const sceneEl = document.getElementById('ar-scene');
@@ -1574,41 +1714,67 @@
                 }
             }
 
-            // Elementos da ligação
-            const callScreen = document.getElementById('call-screen');
-            const answerButton = document.getElementById('answer-button');
-            const declineButton = document.getElementById('decline-button');
-            const callTimer = document.getElementById('call-timer');
-            const callStatus = document.getElementById('call-status');
-            let dustinAudio = null;
-            let callStartTime = null;
-            let callTimerInterval = null;
-            let vibrationInterval = null;
-            let ringtonePlaying = false;
+            // Inicializar elementos da ligação
+            callScreen = document.getElementById('call-screen');
+            answerButton = document.getElementById('answer-button');
+            declineButton = document.getElementById('decline-button');
+            callTimer = document.getElementById('call-timer');
+            callStatus = document.getElementById('call-status');
 
-            // Definição duplicada removida
+            console.log('Elementos da ligação inicializados:');
+            console.log('callScreen:', callScreen);
+            console.log('answerButton:', answerButton);
+            console.log('declineButton:', declineButton);
+
+            // Botão de teste temporário
+            const testCallButton = document.getElementById('test-call-button');
+            if (testCallButton) {
+                testCallButton.addEventListener('click', () => {
+                    console.log('Botão de teste clicado - testando ligação');
+                    showDustinCall('walkie-talkie');
+                });
+            }
 
             let currentMissionAudio = 'walkie-talkie'; // Controla qual áudio tocar
 
             function showDustinCall(missionKey = 'walkie-talkie') {
                 currentMissionAudio = missionKey;
                 console.log('Mostrando ligação do Dustin para missão:', missionKey);
+                console.log('callScreen element:', callScreen);
+                console.log('answerButton element:', answerButton);
+                console.log('declineButton element:', declineButton);
+
+                if (!callScreen) {
+                    console.error('callScreen element não encontrado!');
+                    return;
+                }
 
                 // Esconder a UI do jogo e mostrar a tela de ligação
                 document.getElementById('backpack-icon').style.display = 'none';
                 document.getElementById('distance-meter').classList.remove('show');
                 callScreen.classList.remove('hidden');
 
+                console.log('Tela de ligação deveria estar visível agora');
+                console.log('callScreen classes:', callScreen.className);
+
                 // Iniciar vibração de ligação recebida
                 startIncomingCallEffects();
 
                 // Configurar eventos dos botões
-                answerButton.addEventListener('click', answerCall, { once: true }); // Usar once para evitar múltiplos cliques
-                declineButton.addEventListener('click', declineCall, { once: true });
+                if (answerButton) {
+                    answerButton.addEventListener('click', answerCall, { once: true });
+                    console.log('Event listener adicionado ao botão de atender');
+                }
+                if (declineButton) {
+                    declineButton.addEventListener('click', declineCall, { once: true });
+                    console.log('Event listener adicionado ao botão de recusar');
+                }
             }
 
             // Tornar função disponível globalmente
             window.showDustinCall = showDustinCall;
+
+
 
             function startIncomingCallEffects() {
                 const vibrationPattern = [500, 300, 500, 1000];
@@ -2266,13 +2432,21 @@
                 console.log('collectItem chamada para:', id);
                 console.log('dustinAudios disponível:', dustinAudios);
                 console.log('dustinAudios[id]:', dustinAudios[id]);
+                console.log('window.showDustinCall disponível:', typeof window.showDustinCall);
 
-                if (dustinAudios[id]) {
+                if (dustinAudios && dustinAudios[id]) {
                     console.log('Iniciando ligação do Dustin para item:', id);
                     // Delay de 3 segundos para dar tempo do jogador ver o item sendo coletado
                     setTimeout(() => {
                         console.log('Executando showDustinCall para:', id);
-                        showDustinCall(id);
+                        console.log('Verificando se showDustinCall existe:', typeof showDustinCall);
+                        if (typeof showDustinCall === 'function') {
+                            showDustinCall(id);
+                        } else if (typeof window.showDustinCall === 'function') {
+                            window.showDustinCall(id);
+                        } else {
+                            console.error('showDustinCall não está definida!');
+                        }
                     }, 3000);
                 } else {
                     console.log('Nenhum áudio encontrado para:', id, '- preparando próximo objeto');
@@ -2288,27 +2462,27 @@
             }
         });
 
-                // Small UI helpers: equalizer visual control and font-ready fallback
-                document.addEventListener('DOMContentLoaded', () => {
-                    const equalizer = document.querySelectorAll('.equalizer .bar');
-                    function startEqualizer() {
-                        equalizer.forEach((b, i) => b.style.animationPlayState = 'running');
-                    }
-                    function stopEqualizer() {
-                        equalizer.forEach((b) => b.style.animationPlayState = 'paused');
-                    }
+        // Small UI helpers: equalizer visual control and font-ready fallback
+        document.addEventListener('DOMContentLoaded', () => {
+            const equalizer = document.querySelectorAll('.equalizer .bar');
+            function startEqualizer() {
+                equalizer.forEach((b, i) => b.style.animationPlayState = 'running');
+            }
+            function stopEqualizer() {
+                equalizer.forEach((b) => b.style.animationPlayState = 'paused');
+            }
 
-                    // Hook call screen buttons to animation (best-effort non-invasive)
-                    const callScreen = document.getElementById('call-screen');
-                    const answerButton = document.getElementById('answer-button');
-                    const declineButton = document.getElementById('decline-button');
+            // Hook call screen buttons to animation (best-effort non-invasive)
+            const callScreenEqualizer = document.getElementById('call-screen');
+            const answerButtonEqualizer = document.getElementById('answer-button');
+            const declineButtonEqualizer = document.getElementById('decline-button');
 
-                    if (answerButton) answerButton.addEventListener('click', () => { startEqualizer(); });
-                    if (declineButton) declineButton.addEventListener('click', () => { stopEqualizer(); });
+            if (answerButtonEqualizer) answerButtonEqualizer.addEventListener('click', () => { startEqualizer(); });
+            if (declineButtonEqualizer) declineButtonEqualizer.addEventListener('click', () => { stopEqualizer(); });
 
-                    // Pause equalizer by default
-                    stopEqualizer();
-                });
+            // Pause equalizer by default
+            stopEqualizer();
+        });
 
         // Componente A-Frame para combate do Demogorgon
         AFRAME.registerComponent('demogorgon-combat', {
