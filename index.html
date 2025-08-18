@@ -1107,6 +1107,12 @@
             style="position: fixed; bottom: 20px; right: 20px; z-index: 30; padding: 10px; background: #ff0000; color: white; border: none; border-radius: 5px; display: none;">
             Coletar Item (Debug)
         </button>
+        
+        <!-- Botão de teste do machado -->
+        <button id="test-machado"
+            style="position: fixed; bottom: 80px; right: 20px; z-index: 30; padding: 10px; background: #00ff00; color: black; border: none; border-radius: 5px; display: block;">
+            Testar Machado
+        </button>
 
 
     </div>
@@ -1691,6 +1697,41 @@
                 setInterval(() => {
                     debugButton.style.display = (currentObjectPlaced && currentObjectIndex < objectsToPlace.length) ? 'block' : 'none';
                 }, 1000);
+                
+                // Botão de teste do machado
+                const testMachadoButton = document.getElementById('test-machado');
+                testMachadoButton.addEventListener('click', () => {
+                    console.log('=== TESTE DO MACHADO ===');
+                    console.log('Estado atual:');
+                    console.log('- currentObjectIndex:', currentObjectIndex);
+                    console.log('- objectsToPlace:', objectsToPlace);
+                    console.log('- Objeto atual:', objectsToPlace[currentObjectIndex]);
+                    console.log('- currentObjectPlaced:', currentObjectPlaced);
+                    console.log('- canPlace:', canPlace);
+                    console.log('- locationUnlocked:', locationUnlocked);
+                    
+                    // Forçar o índice para o machado (índice 4)
+                    currentObjectIndex = 4;
+                    window.currentObjectIndex = 4;
+                    currentObjectPlaced = false;
+                    window.currentObjectPlaced = false;
+                    canPlace = true;
+                    locationUnlocked[4] = true;
+                    
+                    console.log('Forçando estado para machado:');
+                    console.log('- Novo currentObjectIndex:', currentObjectIndex);
+                    console.log('- Novo objeto atual:', objectsToPlace[currentObjectIndex]);
+                    
+                    // Verificar se a entidade do machado existe
+                    const machadoEntity = document.getElementById('machado');
+                    console.log('- Entidade machado encontrada:', !!machadoEntity);
+                    if (machadoEntity) {
+                        console.log('- Machado visível:', machadoEntity.getAttribute('visible'));
+                        console.log('- Machado classes:', machadoEntity.className);
+                    }
+                    
+                    checkProximityToLocations();
+                });
             }
 
             function setupBackpackModal() {
@@ -1896,7 +1937,13 @@
 
             function placeObject(pose) {
                 const objectId = objectsToPlace[currentObjectIndex];
+                console.log(`=== COLOCANDO OBJETO: ${objectId} (índice ${currentObjectIndex}) ===`);
+                
                 const objectEntity = document.getElementById(objectId);
+                if (!objectEntity) {
+                    console.error(`Entidade não encontrada para o objeto: ${objectId}`);
+                    return;
+                }
 
                 objectEntity.object3D.matrix.fromArray(pose.transform.matrix);
                 objectEntity.object3D.matrix.decompose(objectEntity.object3D.position, objectEntity.object3D.quaternion, objectEntity.object3D.scale);
@@ -1907,15 +1954,17 @@
                     'will-mundo-invertido': 1
                 };
                 const scale = scales[objectId] || 0.5;
+                console.log(`Aplicando escala ${scale} para ${objectId}`);
                 objectEntity.object3D.scale.set(scale, scale, scale);
 
                 objectEntity.setAttribute('visible', true);
                 currentObjectPlaced = true;
                 window.currentObjectPlaced = true;
-                console.log('Objeto colocado:', objectId);
+                console.log(`Objeto ${objectId} colocado e tornado visível`);
 
                 // Tratamento especial para o Demogorgon
                 if (objectId === 'demogorgon') {
+                    console.log('Tratamento especial para Demogorgon');
                     // Iniciar combate manualmente
                     const objectName = getObjectName(objectId);
                     showToast(`${objectName} apareceu! Prepare-se para a batalha!`, 'warning');
@@ -1930,6 +1979,7 @@
                         }
                     }, 500);
                 } else {
+                    console.log(`Adicionando classe collectible-ready para ${objectId}`);
                     objectEntity.classList.add('collectible-ready');
                     const objectName = getObjectName(objectId);
                     showToast(`${objectName} encontrado! Toque para coletar.`, 'success');
@@ -1943,19 +1993,29 @@
                 window.currentObjectIndex = currentObjectIndex;
                 window.currentObjectPlaced = false;
 
+                console.log(`Preparando próximo objeto - Índice: ${currentObjectIndex}, Objeto: ${objectsToPlace[currentObjectIndex] || 'FIM'}`);
+
                 if (currentObjectIndex < objectsToPlace.length) {
                     const nextObjectId = objectsToPlace[currentObjectIndex];
                     const nextObjectName = getObjectName(nextObjectId);
+                    console.log(`Próximo objeto: ${nextObjectId} (${nextObjectName})`);
                     showToast(`Ótimo! Agora vá até a localização de ${nextObjectName}`, 'info', 4000);
                     canPlace = false;
                     setTimeout(checkProximityToLocations, 1500);
                 } else {
+                    console.log('Todos os objetos foram coletados - mostrando tela de vitória');
                     showVictoryScreen();
                 }
             }
 
             function collectItem(id) {
-                if (collectibles[id]) return;
+                console.log(`=== COLETANDO ITEM: ${id} ===`);
+                console.log(`Índice atual: ${currentObjectIndex}, Objeto esperado: ${objectsToPlace[currentObjectIndex]}`);
+                
+                if (collectibles[id]) {
+                    console.log(`Item ${id} já foi coletado anteriormente`);
+                    return;
+                }
 
                 collectibles[id] = true;
                 foundCollectibles++;
@@ -1965,6 +2025,7 @@
                 if (entity) {
                     entity.setAttribute('visible', 'false');
                     entity.classList.remove('collectible-ready');
+                    console.log(`Entidade ${id} ocultada`);
                 }
 
                 const listItem = document.querySelector(`#collectibles-list li[data-item="${id}"]`);
@@ -1972,6 +2033,7 @@
                     listItem.classList.add('found');
                     const statusIcon = listItem.querySelector('.item-status');
                     if (statusIcon) statusIcon.innerText = '✅';
+                    console.log(`Item ${id} marcado como encontrado na lista`);
                 }
                 updateBackpackContent();
 
