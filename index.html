@@ -941,7 +941,7 @@
             <a-asset-item id="bike-model" src="assets/models/bicicleta-will.glb"></a-asset-item>
             <a-asset-item id="compass-model" src="assets/models/compass.glb"></a-asset-item>
             <a-asset-item id="baseball-bat-model" src="assets/models/baseball_bat.glb"></a-asset-item>
-            <a-asset-item id="machado-model" src="assets/models/machado.glb"></a-asset-item>
+
             <a-asset-item id="walkie-talkie-model"
                 src="assets/models/stranger_things_walkie_talkie/scene.gltf"></a-asset-item>
             <a-asset-item id="demogorgon-model" src="assets/models/demogorgon.glb"></a-asset-item>
@@ -973,8 +973,7 @@
             visible="false"></a-entity>
         <a-entity id="baseball-bat" class="collectible" gltf-model="#baseball-bat-model" collectible-object
             visible="false"></a-entity>
-        <a-entity id="machado" class="collectible" gltf-model="#machado-model" collectible-object
-            visible="false"></a-entity>
+
         <a-entity id="walkie-talkie" class="collectible" gltf-model="#walkie-talkie-model" collectible-object
             material="shader: standard; transparent: false;" visible="false"></a-entity>
         <a-entity id="demogorgon" class="enemy" gltf-model="#demogorgon-model" demogorgon-combat
@@ -1000,7 +999,7 @@
         <!-- Ícone da mochila -->
         <div id="backpack-icon" class="ui-element">
             🎒
-            <div id="backpack-badge">0/7</div>
+            <div id="backpack-badge">0/6</div>
         </div>
 
         <!-- Modal da mochila -->
@@ -1014,7 +1013,7 @@
                 </div>
 
                 <div id="progress-info">
-                    <span id="progress-text">0 de 7 itens coletados</span>
+                    <span id="progress-text">0 de 6 itens coletados</span>
                 </div>
                 <div id="progress-bar-game">
                     <div id="progress-fill"></div>
@@ -1037,10 +1036,7 @@
                         ⚾ Taco de Baseball
                         <span class="item-status">❌</span>
                     </li>
-                    <li data-item="machado">
-                        🪓 Machado
-                        <span class="item-status">❌</span>
-                    </li>
+
                     <li data-item="demogorgon">
                         👹 Demogorgon
                         <span class="item-status">❌</span>
@@ -1196,12 +1192,11 @@
                 bike: false,
                 compass: false,
                 'baseball-bat': false,
-                machado: false,
                 demogorgon: false,
                 'will-mundo-invertido': false
             };
             let foundCollectibles = 0;
-            const objectsToPlace = ['walkie-talkie', 'bike', 'compass', 'baseball-bat', 'machado', 'demogorgon', 'will-mundo-invertido'];
+            const objectsToPlace = ['walkie-talkie', 'bike', 'compass', 'baseball-bat', 'demogorgon', 'will-mundo-invertido'];
             let currentObjectIndex = 0;
             let currentObjectPlaced = false;
             let gameInitialized = false; // Flag para controlar a inicialização do jogo
@@ -1223,7 +1218,6 @@
                 { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Bicicleta' },
                 { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Bússola' },
                 { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Taco de Baseball' },
-                { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Machado' },
                 { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Demogorgon' },
                 { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Will (Mundo Invertido)' }
             ];
@@ -1236,9 +1230,8 @@
                 'bike': 'assets/audio/dustin-missao-2-completa.mp3',
                 'compass': 'assets/audio/dustin-missao-3-completa.mp3',
                 'baseball-bat': 'assets/audio/dustin-missao-4-completa.mp3',
-                'machado': 'assets/audio/dustin-missao-5-completa.mp3',
-                'demogorgon': 'assets/audio/dustin-missao-6-completa.mp3',
-                'will-mundo-invertido': 'assets/audio/dustin-missao-7-completa.mp3'
+                'demogorgon': 'assets/audio/dustin-missao-5-completa.mp3',
+                'will-mundo-invertido': 'assets/audio/dustin-missao-6-completa.mp3'
             };
 
             // Tornar disponível globalmente
@@ -1784,7 +1777,7 @@
             function getObjectName(objectId) {
                 const names = {
                     'bike': 'Bicicleta', 'compass': 'Bússola', 'baseball-bat': 'Taco de Baseball',
-                    'machado': 'Machado', 'walkie-talkie': 'Walkie-Talkie', 'demogorgon': 'Demogorgon',
+                    'walkie-talkie': 'Walkie-Talkie', 'demogorgon': 'Demogorgon',
                     'will-mundo-invertido': 'Will (Mundo Invertido)'
                 };
                 return names[objectId] || 'objeto';
@@ -1950,7 +1943,7 @@
 
                 const scales = {
                     'bike': 0.4, 'demogorgon': 0.8, 'baseball-bat': 1.5,
-                    'compass': 10, 'machado': 5, 'walkie-talkie': 0.6,
+                    'compass': 10, 'walkie-talkie': 0.6,
                     'will-mundo-invertido': 1
                 };
                 const scale = scales[objectId] || 0.5;
@@ -2311,7 +2304,7 @@
                     // Atualizar contador
                     const foundCount = Object.values(collectibles).filter(Boolean).length;
                     const badge = document.getElementById('backpack-badge');
-                    if (badge) badge.textContent = `${foundCount}/7`;
+                    if (badge) badge.textContent = `${foundCount}/6`;
 
                     // Chamar ligação do Dustin manualmente no fallback
                     if (window.dustinAudios && window.dustinAudios['demogorgon']) {
