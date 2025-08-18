@@ -943,8 +943,7 @@
             <a-asset-item id="machado-model" src="assets/models/machado.glb"></a-asset-item>
             <a-asset-item id="walkie-talkie-model" src="assets/models/walkie_talkie.glb"></a-asset-item>
             <a-asset-item id="demogorgon-model" src="assets/models/demogorgon.glb"></a-asset-item>
-            <a-asset-item id="will-mundo-invertido-model"
-                src="assets/models/will_byers_mundo_invertido.gltf"></a-asset-item>
+            <a-asset-item id="will-mundo-invertido-model" src="assets/models/will_byers.glb"></a-asset-item>
         </a-assets>
 
         <!-- Iluminação da Cena -->
@@ -989,7 +988,7 @@
             <div id="progress-bar-container">
                 <div id="progress-bar"></div>
             </div>
-            <p id="loading-info">8Carregando assets...</p>
+            <p id="loading-info">Carregando assets...</p>
 
             <button id="enter-button" class="ui-element">Entrar no Mundo Invertido</button>
         </div>
@@ -1316,8 +1315,12 @@
                 // Iniciar vibração de ligação recebida
                 startIncomingCallEffects();
 
-                // Configurar eventos dos botões
-                answerButton.addEventListener('click', answerCall, { once: true }); // Usar once para evitar múltiplos cliques
+                // Remover listeners anteriores para evitar duplicação
+                answerButton.removeEventListener('click', answerCall);
+                declineButton.removeEventListener('click', declineCall);
+
+                // Configurar eventos dos botões com proteção contra duplicação
+                answerButton.addEventListener('click', answerCall, { once: true });
                 declineButton.addEventListener('click', declineCall, { once: true });
             }
 
@@ -1455,41 +1458,31 @@
                 stopIncomingCallEffects();
                 stopCallTimer();
 
+                // Limpeza adequada do áudio
                 if (dustinAudio) {
                     dustinAudio.pause();
+                    dustinAudio.currentTime = 0;
+                    dustinAudio.removeEventListener('ended', arguments.callee);
+                    dustinAudio.removeEventListener('error', arguments.callee);
                     dustinAudio = null;
                 }
+
+                // Remover listeners dos botões para evitar vazamentos
+                answerButton.removeEventListener('click', answerCall);
+                declineButton.removeEventListener('click', declineCall);
 
                 callScreen.classList.remove('call-active');
                 callScreen.classList.add('hidden');
 
-                // Resetar UI da ligação para a proxima vez
+                // Resetar UI da ligação para a próxima vez
                 callTimer.style.display = 'none';
                 document.getElementById('call-buttons').style.display = 'flex';
                 answerButton.classList.add('calling-animation');
                 callStatus.innerText = "Chamada recebida...";
 
-
                 // Mostrar UI do jogo novamente
                 document.getElementById('backpack-icon').style.display = 'flex';
                 document.getElementById('distance-meter').classList.add('show');
-
-                if (wasDeclined) {
-                    // Toast de ligação recusada removido
-                } else {
-                    // Mostrar mensagem de continuação baseada na missão atual
-                    const missionMessages = {
-                        'walkie-talkie': 'Agora procure a bicicleta do Will!',
-                        'bike': 'Encontre a bússola para navegar!',
-                        'compass': 'Pegue o taco de baseball para se defender!',
-                        'baseball-bat': 'Encontre o machado!',
-                        'machado': 'Cuidado! Procure o Demogorgon!',
-                        'demogorgon': 'Última missão: encontre Will no Mundo Invertido!',
-                        'will-mundo-invertido': 'Missão completa!'
-                    };
-
-                    // Mensagens de missão removidas - Dustin já fornece as instruções
-                }
 
                 // Continuar para o próximo objeto ou mostrar vitória
                 if (currentMissionAudio === 'will-mundo-invertido') {
@@ -1525,26 +1518,18 @@
 
             // Função removida - substituída por startAudioLoadingLocal
 
-            // Função de carregamento de áudios (dentro do escopo do DOMContentLoaded)
+            // Função de carregamento de áudios real (dentro do escopo do DOMContentLoaded)
             function startAudioLoadingLocal() {
                 console.log('startAudioLoadingLocal() chamada');
                 console.log('dustinAudios:', dustinAudios);
 
                 if (!loadingInfo || !progressBar) {
                     console.error('Elementos de UI não encontrados');
-                    console.log('loadingInfo:', loadingInfo);
-                    console.log('progressBar:', progressBar);
-
-                    // Tentar encontrar os elementos novamente
-                    const loadingInfoNew = document.getElementById('loading-info');
-                    const progressBarNew = document.getElementById('progress-bar');
-                    console.log('Tentativa de encontrar novamente:');
-                    console.log('loadingInfoNew:', loadingInfoNew);
-                    console.log('progressBarNew:', progressBarNew);
+                    startSimpleLoading();
                     return;
                 }
 
-                console.log('Elementos encontrados, iniciando carregamento...');
+                console.log('Elementos encontrados, iniciando carregamento real...');
                 loadingInfo.innerText = "Carregando áudios...";
 
                 const audioKeys = Object.keys(dustinAudios);
@@ -1552,11 +1537,10 @@
                 loadedAssets = 0;
 
                 console.log(`Carregando ${totalAssets} áudios`);
-                console.log('Chamando updateLoadingProgress...');
                 updateLoadingProgress();
 
-                // Carregar cada áudio
-                audioKeys.forEach((key, index) => {
+                // Carregar cada áudio de forma real
+                audioKeys.forEach((key) => {
                     const audioSrc = dustinAudios[key];
                     console.log(`Carregando áudio ${key}: ${audioSrc}`);
 
@@ -1564,13 +1548,40 @@
                     audio.preload = 'auto';
                     audio.volume = 0.8;
 
-                    // Simular carregamento após um tempo
-                    setTimeout(() => {
+                    // Eventos reais de carregamento
+                    const onLoad = () => {
                         loadedAssets++;
                         updateLoadingProgress();
                         preloadedAudios[key] = audio;
-                        console.log(`Áudio ${key} carregado (${loadedAssets}/${totalAssets})`);
-                    }, (index + 1) * 500); // Escalonar o carregamento
+                        console.log(`Áudio ${key} carregado com sucesso (${loadedAssets}/${totalAssets})`);
+                        cleanup();
+                    };
+
+                    const onError = (error) => {
+                        console.warn(`Erro ao carregar áudio ${key}:`, error);
+                        loadedAssets++; // Contar como carregado para não travar
+                        updateLoadingProgress();
+                        cleanup();
+                    };
+
+                    const cleanup = () => {
+                        audio.removeEventListener('canplaythrough', onLoad);
+                        audio.removeEventListener('error', onError);
+                        audio.removeEventListener('loadeddata', onLoad);
+                    };
+
+                    // Múltiplos eventos para garantir compatibilidade
+                    audio.addEventListener('canplaythrough', onLoad, { once: true });
+                    audio.addEventListener('loadeddata', onLoad, { once: true });
+                    audio.addEventListener('error', onError, { once: true });
+
+                    // Timeout de segurança
+                    setTimeout(() => {
+                        if (!preloadedAudios[key]) {
+                            console.warn(`Timeout no carregamento de ${key}`);
+                            onError(new Error('Timeout'));
+                        }
+                    }, 10000); // 10 segundos timeout
                 });
             }
 
@@ -1588,37 +1599,65 @@
 
             enterButton.addEventListener('click', async () => {
                 console.log('Botão de entrada clicado. Tentando iniciar AR...');
+
+                // Verificações de segurança
+                if (enterButton.disabled) {
+                    console.log('Botão já está desabilitado, ignorando clique...');
+                    return;
+                }
+
                 loadingInfo.innerText = "Iniciando AR...";
-                enterButton.disabled = true; // Desabilitar botão para evitar cliques duplos
+                enterButton.disabled = true;
+                enterButton.style.opacity = '0.6';
 
                 // Adicionar um timeout para o caso de a inicialização travar
                 const arStartTimeout = setTimeout(() => {
                     if (!gameInitialized) {
+                        console.error('Timeout na inicialização do AR');
                         loadingInfo.innerText = "Falha ao iniciar AR. Verifique as permissões e recarregue a página.";
                         enterButton.innerText = "Tentar Novamente";
                         enterButton.disabled = false;
+                        enterButton.style.opacity = '1';
                     }
-                }, 8000); // 8 segundos de timeout
+                }, 10000); // 10 segundos de timeout
 
                 try {
+                    // Verificações de compatibilidade
                     if (!navigator.xr) {
-                        throw new Error('WebXR não é suportado neste navegador.');
+                        throw new Error('WebXR não é suportado neste navegador. Use Chrome ou Edge em Android.');
                     }
-                    if (window.location.protocol !== 'https:') {
+
+                    if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
                         throw new Error('WebXR requer uma conexão segura (HTTPS).');
                     }
 
+                    // Verificar se AR é suportado
+                    const isARSupported = await navigator.xr.isSessionSupported('immersive-ar');
+                    if (!isARSupported) {
+                        throw new Error('AR não é suportado neste dispositivo.');
+                    }
+
+                    console.log('Iniciando sessão AR...');
                     await sceneEl.enterAR();
-                    // O evento 'enter-vr' vai cuidar da inicialização do jogo
-                    // O timeout será limpo no listener 'enter-vr'
+
+                    // Limpar timeout se chegou até aqui
                     clearTimeout(arStartTimeout);
 
                 } catch (e) {
                     clearTimeout(arStartTimeout);
                     console.error('Erro ao iniciar AR:', e);
-                    loadingInfo.innerText = `Erro: ${e.message}`;
+
+                    let errorMessage = e.message;
+                    if (e.message.includes('NotAllowedError')) {
+                        errorMessage = 'Permissão de câmera negada. Permita o acesso à câmera e tente novamente.';
+                    } else if (e.message.includes('NotFoundError')) {
+                        errorMessage = 'Câmera não encontrada. Verifique se seu dispositivo tem câmera.';
+                    }
+
+                    loadingInfo.innerText = `Erro: ${errorMessage}`;
                     enterButton.innerText = "Tentar Novamente";
                     enterButton.disabled = false;
+                    enterButton.style.opacity = '1';
                 }
             });
 
@@ -1889,10 +1928,12 @@
                 } else {
                     reticle.setAttribute('visible', false);
                 }
-                // A renderização manual da cena foi removida na versão anterior, causando o bug.
-                // A-Frame não renderiza automaticamente quando usamos um loop de animação customizado com `setAnimationLoop`.
-                // Esta linha foi adicionada novamente para corrigir o problema.
-                sceneEl.renderer.render(sceneEl.object3D, sceneEl.camera);
+
+                // CORREÇÃO CRÍTICA: Renderização manual necessária quando usando setAnimationLoop customizado
+                // A-Frame não renderiza automaticamente neste caso
+                if (sceneEl.renderer && sceneEl.object3D && sceneEl.camera) {
+                    sceneEl.renderer.render(sceneEl.object3D, sceneEl.camera);
+                }
             }
 
             function placeObject(pose) {
@@ -1941,8 +1982,11 @@
             function prepareForNextObject() {
                 currentObjectIndex++;
                 currentObjectPlaced = false;
+
+                // Sincronizar variáveis globais corretamente
                 window.currentObjectIndex = currentObjectIndex;
-                window.currentObjectPlaced = false;
+                window.currentObjectPlaced = currentObjectPlaced;
+                window.objectsToPlace = objectsToPlace;
 
                 if (currentObjectIndex < objectsToPlace.length) {
                     const nextObjectId = objectsToPlace[currentObjectIndex];
@@ -1956,8 +2000,12 @@
             }
 
             function collectItem(id) {
-                if (collectibles[id]) return;
+                if (collectibles[id]) {
+                    console.log(`Item ${id} já foi coletado, ignorando...`);
+                    return;
+                }
 
+                console.log(`Coletando item: ${id}`);
                 collectibles[id] = true;
                 foundCollectibles++;
                 vibrateDevice([100, 50, 100]);
@@ -1966,6 +2014,14 @@
                 if (entity) {
                     entity.setAttribute('visible', 'false');
                     entity.classList.remove('collectible-ready');
+
+                    // Limpeza de componentes específicos
+                    if (id === 'demogorgon') {
+                        const demogorgonComponent = entity.components['demogorgon-combat'];
+                        if (demogorgonComponent && demogorgonComponent.remove) {
+                            demogorgonComponent.remove();
+                        }
+                    }
                 }
 
                 const listItem = document.querySelector(`#collectibles-list li[data-item="${id}"]`);
@@ -1974,14 +2030,18 @@
                     const statusIcon = listItem.querySelector('.item-status');
                     if (statusIcon) statusIcon.innerText = '✅';
                 }
+
                 updateBackpackContent();
+
+                // Tornar função disponível globalmente para componentes
+                window.collectItem = collectItem;
 
                 // Sistema de ligações progressivas do Dustin
                 console.log('collectItem chamada para:', id);
-                console.log('dustinAudios disponível:', dustinAudios);
-                console.log('dustinAudios[id]:', dustinAudios[id]);
+                console.log('dustinAudios disponível:', typeof dustinAudios !== 'undefined');
+                console.log('dustinAudios[id]:', dustinAudios ? dustinAudios[id] : 'dustinAudios não definido');
 
-                if (dustinAudios[id]) {
+                if (dustinAudios && dustinAudios[id]) {
                     console.log('Iniciando ligação do Dustin para item:', id);
                     // Delay de 3 segundos para dar tempo do jogador ver o item sendo coletado
                     setTimeout(() => {
@@ -1990,15 +2050,52 @@
                     }, 3000);
                 } else {
                     console.log('Nenhum áudio encontrado para:', id, '- preparando próximo objeto');
-                    prepareForNextObject();
+                    setTimeout(prepareForNextObject, 1500);
                 }
             }
 
             function showVictoryScreen() {
-                if (geolocationWatchId) navigator.geolocation.clearWatch(geolocationWatchId);
+                console.log('Mostrando tela de vitória - limpando recursos...');
+
+                // Limpeza de recursos de geolocalização
+                if (geolocationWatchId) {
+                    navigator.geolocation.clearWatch(geolocationWatchId);
+                    geolocationWatchId = null;
+                }
+
+                // Limpeza de timers e intervals ativos
+                if (callTimerInterval) {
+                    clearInterval(callTimerInterval);
+                    callTimerInterval = null;
+                }
+
+                if (vibrationInterval) {
+                    clearInterval(vibrationInterval);
+                    vibrationInterval = null;
+                }
+
+                // Parar vibração
+                if (navigator.vibrate) {
+                    navigator.vibrate(0);
+                }
+
+                // Limpeza de áudio
+                if (dustinAudio) {
+                    dustinAudio.pause();
+                    dustinAudio = null;
+                }
+
+                // Esconder elementos da UI
                 document.getElementById('backpack-icon').style.display = 'none';
                 document.getElementById('backpack-modal').style.display = 'none';
+                document.getElementById('distance-meter').classList.remove('show');
+                document.getElementById('combat-ui').classList.remove('show');
+
+                // Mostrar tela de vitória
                 victoryScreen.classList.remove('hidden');
+
+                // Vibração de vitória
+                vibrateDevice([200, 100, 200, 100, 200, 100, 500]);
             }
         });
 
@@ -2023,32 +2120,72 @@
                 this.healthBar = document.getElementById('health-bar');
                 this.healthValue = document.getElementById('health-value');
 
+                // Bind dos métodos para evitar problemas de contexto
+                this.boundOnAttack = this.onAttack.bind(this);
+                this.boundOnTargetEnter = this.onTargetEnter.bind(this);
+                this.boundOnTargetLeave = this.onTargetLeave.bind(this);
+
                 // Eventos de combate
-                this.el.addEventListener('click', this.onAttack.bind(this));
-                this.el.addEventListener('touchstart', this.onAttack.bind(this));
-                this.el.addEventListener('mousedown', this.onAttack.bind(this));
+                this.el.addEventListener('click', this.boundOnAttack);
+                this.el.addEventListener('touchstart', this.boundOnAttack);
+                this.el.addEventListener('mousedown', this.boundOnAttack);
 
                 // Eventos de mira
-                this.el.addEventListener('mouseenter', this.onTargetEnter.bind(this));
-                this.el.addEventListener('mouseleave', this.onTargetLeave.bind(this));
-                this.el.addEventListener('raycaster-intersected', this.onTargetEnter.bind(this));
-                this.el.addEventListener('raycaster-intersected-cleared', this.onTargetLeave.bind(this));
+                this.el.addEventListener('mouseenter', this.boundOnTargetEnter);
+                this.el.addEventListener('mouseleave', this.boundOnTargetLeave);
+                this.el.addEventListener('raycaster-intersected', this.boundOnTargetEnter);
+                this.el.addEventListener('raycaster-intersected-cleared', this.boundOnTargetLeave);
 
                 // Verificação periódica para iniciar combate quando visível
                 this.visibilityCheck = setInterval(() => {
                     if (!this.combatStarted && this.el.getAttribute('visible') === true) {
                         console.log('Demogorgon detectado como visível, iniciando combate...');
                         this.startCombat();
-                        clearInterval(this.visibilityCheck);
+                        this.clearVisibilityCheck();
                     }
                 }, 500);
 
                 // Limpar interval após 30 segundos para evitar vazamentos
-                setTimeout(() => {
-                    if (this.visibilityCheck) {
-                        clearInterval(this.visibilityCheck);
-                    }
+                this.cleanupTimeout = setTimeout(() => {
+                    this.clearVisibilityCheck();
                 }, 30000);
+            },
+
+            // Método para limpeza adequada do interval
+            clearVisibilityCheck: function () {
+                if (this.visibilityCheck) {
+                    clearInterval(this.visibilityCheck);
+                    this.visibilityCheck = null;
+                }
+            },
+
+            // Método de limpeza geral
+            remove: function () {
+                this.clearVisibilityCheck();
+
+                if (this.cleanupTimeout) {
+                    clearTimeout(this.cleanupTimeout);
+                    this.cleanupTimeout = null;
+                }
+
+                // Remover event listeners
+                if (this.boundOnAttack) {
+                    this.el.removeEventListener('click', this.boundOnAttack);
+                    this.el.removeEventListener('touchstart', this.boundOnAttack);
+                    this.el.removeEventListener('mousedown', this.boundOnAttack);
+                }
+
+                if (this.boundOnTargetEnter && this.boundOnTargetLeave) {
+                    this.el.removeEventListener('mouseenter', this.boundOnTargetEnter);
+                    this.el.removeEventListener('mouseleave', this.boundOnTargetLeave);
+                    this.el.removeEventListener('raycaster-intersected', this.boundOnTargetEnter);
+                    this.el.removeEventListener('raycaster-intersected-cleared', this.boundOnTargetLeave);
+                }
+
+                // Esconder UI de combate
+                if (this.combatUI) {
+                    this.combatUI.classList.remove('show');
+                }
             },
 
             startCombat: function () {
