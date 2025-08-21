@@ -263,6 +263,35 @@
             border: 1px solid #e72626;
         }
 
+        #credits-info {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.8em;
+            color: #aaa;
+        }
+
+        #credits-info h4 {
+            margin: 0 0 10px 0;
+            color: #e72626;
+            font-size: 1.1em;
+        }
+
+        #credits-info ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0 0 10px 0;
+        }
+
+        #credits-info li {
+            margin-bottom: 5px;
+        }
+
+        #credits-info a {
+            color: #ff4444;
+            text-decoration: none;
+        }
+
         #progress-info {
             text-align: center;
             margin-bottom: 15px;
@@ -1051,6 +1080,16 @@
                     <strong>📍 Localização Atual:</strong><br>
                     <span id="location-status">Aguardando GPS...</span>
                 </div>
+
+                <div id="credits-info">
+                    <h4>Créditos e Licenças</h4>
+                    <ul>
+                        <li>"Stranger Things Walkie Talkie" por Mattyew, licenciado sob <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC-BY-4.0</a>.</li>
+                        <li>"Will Byers no mundo invertido" por riverlan.teixeira, licenciado sob <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC-BY-4.0</a>.</li>
+                    </ul>
+                    <p>Stranger Things™ é uma propriedade da Netflix. Este é um projeto de fã criado para fins educacionais e de portfólio, sem afiliação ou endosso.</p>
+                </div>
+
             </div>
         </div>
 
@@ -1214,12 +1253,12 @@
             // Coordenadas dos objetos (latitude, longitude)
             // IMPORTANTE: A ordem deve corresponder exatamente à array objectsToPlace
             const objectLocations = [
-                { lat: -27.630906548324287, lng: -48.67981535800366, name: 'Walkie-Talkie' },
-                { lat: -27.631845440560806, lng: -48.67968143981631, name: 'Bicicleta' },
-                { lat: -27.630047649362357, lng: -48.68165991383035, name: 'Bússola' },
-                { lat: -27.62821131037398, lng: -48.681728646775724, name: 'Taco de Baseball' },
-                { lat: -27.62644874857274, lng: -48.681447984299076, name: 'Demogorgon' },
-                { lat: -27.626148729780688, lng: -48.680796330959495, name: 'Will (Mundo Invertido)' }
+                { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Walkie-Talkie' },
+                { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Bicicleta' },
+                { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Bússola' },
+                { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Taco de Baseball' },
+                { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Demogorgon' },
+                { lat: -27.639820466982767, lng: -48.66781802715769, name: 'Will (Mundo Invertido)' }
             ];
 
             const PROXIMITY_RADIUS = 10; // 10 metros
@@ -1296,6 +1335,10 @@
             let callTimerInterval = null;
             let vibrationInterval = null;
             let ringtonePlaying = false;
+
+            // Handlers para os eventos de áudio, para poderem ser removidos depois
+            let onAudioEndedHandler = null;
+            let onAudioErrorHandler = null;
 
             // Definição duplicada removida
 
@@ -1402,6 +1445,16 @@
                 callStartTime = Date.now();
                 startCallTimer();
 
+                onAudioEndedHandler = () => {
+                    callStatus.innerText = "Chamada finalizada";
+                    setTimeout(endCall, 1500);
+                };
+
+                onAudioErrorHandler = () => {
+                    callStatus.innerText = "Erro no áudio, finalizando...";
+                    setTimeout(endCall, 2000);
+                };
+
                 const playAudio = () => {
                     dustinAudio.play().catch(error => {
                         console.error('Erro ao reproduzir áudio:', error);
@@ -1413,14 +1466,8 @@
                 if (dustinAudio.readyState >= 2) playAudio();
                 else dustinAudio.addEventListener('canplaythrough', playAudio, { once: true });
 
-                dustinAudio.addEventListener('ended', () => {
-                    callStatus.innerText = "Chamada finalizada";
-                    setTimeout(endCall, 1500);
-                });
-                dustinAudio.addEventListener('error', () => {
-                    callStatus.innerText = "Erro no áudio, finalizando...";
-                    setTimeout(endCall, 2000);
-                });
+                dustinAudio.addEventListener('ended', onAudioEndedHandler);
+                dustinAudio.addEventListener('error', onAudioErrorHandler);
             }
 
             function startCallTimer() {
@@ -1460,9 +1507,12 @@
                 if (dustinAudio) {
                     dustinAudio.pause();
                     dustinAudio.currentTime = 0;
-                    dustinAudio.removeEventListener('ended', arguments.callee);
-                    dustinAudio.removeEventListener('error', arguments.callee);
+                    // Remove os listeners específicos para evitar memory leaks
+                    if (onAudioEndedHandler) dustinAudio.removeEventListener('ended', onAudioEndedHandler);
+                    if (onAudioErrorHandler) dustinAudio.removeEventListener('error', onAudioErrorHandler);
                     dustinAudio = null;
+                    onAudioEndedHandler = null;
+                    onAudioErrorHandler = null;
                 }
 
                 // Remover listeners dos botões para evitar vazamentos
