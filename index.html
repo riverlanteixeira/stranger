@@ -1085,7 +1085,7 @@
                     <h4>Créditos e Licenças</h4>
                     <ul>
                         <li>"Stranger Things Walkie Talkie" por Mattyew, licenciado sob <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC-BY-4.0</a>.</li>
-                        <li>"Will Byers no mundo invertido" por riverlan.teixeira, licenciado sob <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC-BY-4.0</a>.</li>
+                        <li>"Will Byers no mundo invertido" por Riverlan Teixeira, licenciado sob <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC-BY-4.0</a>.</li>
                     </ul>
                     <p>Stranger Things™ é uma propriedade da Netflix. Este é um projeto de fã criado para fins educacionais e de portfólio, sem afiliação ou endosso.</p>
                 </div>
@@ -1119,7 +1119,6 @@
 
         <div id="victory-screen" class="ui-screen ui-element hidden">
             <h1>Você Conseguiu!</h1>
-            <p>Todos os itens foram encontrados.</p>
         </div>
 
         <!-- Medidor de distância na tela principal -->
@@ -2039,7 +2038,7 @@
                 if (currentObjectIndex < objectsToPlace.length) {
                     const nextObjectId = objectsToPlace[currentObjectIndex];
                     const nextObjectName = getObjectName(nextObjectId);
-                    showToast(`Ótimo! Agora vá até a localização de ${nextObjectName}`, 'info', 4000);
+                    // showToast(`Ótimo! Agora vá até a localização de ${nextObjectName}`, 'info', 4000);
                     canPlace = false;
                     setTimeout(checkProximityToLocations, 1500);
                 } else {
