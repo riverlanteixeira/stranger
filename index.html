@@ -2007,7 +2007,7 @@
                 if (objectId === 'demogorgon') {
                     // Iniciar combate manualmente
                     const objectName = getObjectName(objectId);
-                    showToast(`${objectName} apareceu! Prepare-se para a batalha!`, 'warning');
+                    // showToast(`${objectName} apareceu! Prepare-se para a batalha!`, 'warning');
 
                     // Iniciar combate após um pequeno delay
                     setTimeout(() => {
@@ -2260,7 +2260,7 @@
                 }, 1500);
 
                 // Toast de início de combate
-                this.showCombatToast('👹 Demogorgon apareceu! Prepare-se para a batalha!', 'warning');
+                // this.showCombatToast('👹 Demogorgon apareceu! Prepare-se para a batalha!', 'warning');
 
                 // Vibração de alerta
                 this.vibrateDevice([200, 100, 200, 100, 200]);
@@ -2300,7 +2300,7 @@
                     this.die();
                 } else {
                     // Toast de dano
-                    this.showCombatToast(`-${damage} HP`, 'success');
+                    // this.showCombatToast(`-${damage} HP`, 'success');
                 }
             },
 
